@@ -6,4 +6,9 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <sys/param.h> // MAXPATHLEN
+
+#include "parameters.h"
+#include "functions.h"
+
 #endif
