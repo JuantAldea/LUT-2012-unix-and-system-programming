@@ -12,4 +12,8 @@
 #define CMD_CD "cd"
 #include "cd.h"
 
+#define COD_SLEEP 2
+#define CMD_SLEEP "sleep"
+#include "sleep.h"
+
 #endif

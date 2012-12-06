@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-
 #include <sys/param.h> // MAXPATHLEN
+#include <signal.h>
 
 #include "parameters.h"
 #include "functions.h"

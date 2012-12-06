@@ -3,6 +3,6 @@
 
 #include "generic.h"
 
-int cd(char * directory);
+int _cd(char * directory);
 
 #endif
