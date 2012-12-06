@@ -1,9 +1,6 @@
 #include "parameters.h"
 #include "functions.h"
-
-void get_input(){
-	printf("lolz\n");
-}
+#include "generic.h"
 
 int main(int argc, char* argv[]){
 
@@ -12,11 +9,11 @@ int main(int argc, char* argv[]){
 	char input_buffer[BUFFER_LENGTH];
 
 	while(running){
-		path = "/etc/lolz";
+		strcpy(path, "/etc/lolz");
 		printf("$ %s > ", path);
 
-		get_input();
-
+		fgets(input_buffer, BUFFER_LENGTH, stdin);
+		printf("Lo que has escrito rulea: %s", input_buffer);
 	}
 
 	return 1;
