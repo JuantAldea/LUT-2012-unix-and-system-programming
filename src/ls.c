@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <grp.h>
 #include <pwd.h>
+#include <time.h>
 void print_text_permissions(mode_t protection)
 {
     printf((S_ISDIR(protection))  ? "d" : "-");
@@ -30,7 +31,9 @@ void print_file_dir_entry(char *name, struct stat *filestat)
     printf("%s ", getpwuid(filestat->st_uid)->pw_name);
     printf("%s ", getgrgid(filestat->st_gid)->gr_name);
     printf("%d ", filestat->st_size);
-    printf("date ");
+    char *date = ctime(&(filestat->st_mtime));
+    date[strlen(date) - 1] = '\0';
+    printf("%s ", date);
     printf("%s", name);
     printf("\n");
 }
@@ -93,5 +96,11 @@ int main (int argc, char *argv[])
         printf("\n");
     }
 
+    if (optind == argc){
+        free(path);
+    }
+    if (dir != NULL){
+        closedir(dir);
+    }
     return 0;
 }
