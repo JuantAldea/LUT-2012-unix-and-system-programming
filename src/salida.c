@@ -38,6 +38,7 @@ char in_file[] = "in";
 
 if (redirect_in){
     int in = open(in_file, O_RDONLY, S_IRUSR|S_IWUSR);
+    //close(pipe);
     if (in > 0){
         in_descriptor = in;
     }else{
@@ -49,6 +50,7 @@ if (redirect_in){
 
 if (redirect_out){
     int out = open(on_file, O_CREAT|O_WRONLY, S_IRUSR|S_IWUSR);
+    //close(pipe);
     if (out > 0){
         redirect_out = out;
     }else{
