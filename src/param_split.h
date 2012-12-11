@@ -11,7 +11,7 @@
 
 #define MAX_PARAM_LENGTH 1024
 
-void split(char *command_str, int *argc, char ***argv);
+void param_split(char *command_str, int *argc, char ***argv);
 void free_param_array(int argc, char ***argv);
 
 #endif
