@@ -36,6 +36,16 @@ int next_piped = 0;
 char out_file[] = "out";
 char in_file[] = "in";
 
+if (redirect_in){
+    int in = open(in_file, O_RDONLY, S_IRUSR|S_IWUSR);
+    if (in > 0){
+        in_descriptor = in;
+    }else{
+        printf("ERROR\n");
+    }
+}else if(previous_piped){
+    //redirect_in = pipe;
+}
 
 if (redirect_out){
     int out = open(on_file, O_CREAT|O_WRONLY, S_IRUSR|S_IWUSR);
@@ -48,17 +58,5 @@ if (redirect_out){
     //redirect_out = pipe
 }
 
-if (redirect_in){
-    int in = open(in_file, O_RDONLY, S_IRUSR|S_IWUSR);
-    if (in > 0){
-        in_descriptor = in;
-    }else{
-        printf("ERROR\n");
-    }
-}else if(previous_piped){
-    //redirect_in = pipe;
-}
-
 //run_command(...);
-
 */
