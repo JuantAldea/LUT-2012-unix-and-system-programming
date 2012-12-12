@@ -5,15 +5,17 @@
 
 #define COD_ERROR -1 // Error command code
 
-#define COD_LS 0 // Command code
-#define CMD_LS "ls" // Actual comand
-
-#define COD_CD 1
-#define CMD_CD "cd"
 #include "cd.h"
+#define COD_CD 0
+#define CMD_CD "cd"
 
-#define COD_SLEEP 2
-#define CMD_SLEEP "sleep"
-#include "sleep.h"
+#include "history.h"
+#define COD_HISTORY 1
+#define CMD_HISTORY "history"
+#define COD_HISTORY_ID 2
+#define CMD_HISTORY_ID "!"
+
+
+#include "run_command.h"
 
 #endif

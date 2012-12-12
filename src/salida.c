@@ -20,6 +20,7 @@ int main(int argc, char **argv)
         run_command("ls -la", STDIN_FILENO, pipe_fds[1], 1);
         close(pipe_fds[1]);
         run_command("grep salida", pipe_fds[0], STDOUT_FILENO, 1);
+
     }else if (pid > 0){
         int status;
         printf("ESPERANDO %d\n", pid);

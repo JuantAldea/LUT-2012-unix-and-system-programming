@@ -2,5 +2,6 @@
 #define __PARAMETERS_H
 
 #define BUFFER_LENGTH 4096
+#define MAX_HISTORY_LENGTH 500
 
 #endif

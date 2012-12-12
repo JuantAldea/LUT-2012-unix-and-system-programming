@@ -69,8 +69,8 @@ void run_command(char *command_str, int in_fd, int out_fd, int wait_children)
         }else{
             //no globs found, argv can be used directly
             execvpe(argv[0], argv, NULL);
-
         }
+
     }else if(wait_children){
         int state;
         wait(&state);

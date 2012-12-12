@@ -8,13 +8,13 @@ SRC := src
 OBJ := obj
 BIN := bin
 
-FUNCTIONS_OBJ := $(OBJ)/cd.o $(OBJ)/sleep.o
+FUNCTIONS_OBJ := $(OBJ)/cd.o $(OBJ)/history.o $(OBJ)/run_command.o $(OBJ)/param_split.o
 
 all: build
 
 build: shell
 
-shell: $(SRC)/main.c $(SRC)/generic.h $(SRC)/parameters.h $(SRC)/functions.h $(FUNCTIONS_OBJ)
+shell: $(SRC)/main.c $(SRC)/generic.h $(SRC)/parameters.h $(SRC)/functions.h $(SRC)/run_command.h $(FUNCTIONS_OBJ)
 	@[ -d $(BIN) ] || mkdir $(BIN)
 	$(CC) $(SRC)/main.c $(FUNCTIONS_OBJ) -o $(BIN)/$@
 
