@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
 
     while(running){
         getcwd(path, MAXPATHLEN);
-        printf("$ %s > ", path);
+        printf("[%s@%s:%s]$ ", getenv("USER"), getenv("HOSTAME"), path);
 
         char partial_buffer[BUFFER_LENGTH];
         int parameters_index;
@@ -151,7 +151,6 @@ int main(int argc, char* argv[]){
                     break;
             }
 
-            free(command);
             command = strtok (NULL, "|");
         }
 
