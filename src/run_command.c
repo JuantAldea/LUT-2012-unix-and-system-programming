@@ -4,6 +4,7 @@ void run_command(char *command_str, int in_fd, int out_fd, int wait_children)
 {
     char **argv = NULL;
     int argc = 0;
+    int first_glob_read = 0;
 
     int i = 0;
     glob_t globbuf;
@@ -21,14 +22,11 @@ void run_command(char *command_str, int in_fd, int out_fd, int wait_children)
         }
     }
     //expand the globs
-    int first_glob_read = 0;
     for (i = 0; i < argc; i++){
-        //printf("%s\n", argv[i]);
         if (argv[i][0] != '-' &&
             (strchr(argv[i], '*') != NULL ||
              strchr(argv[i], '?') != NULL ||
              strchr(argv[i], '[') != NULL)){
-
             if (first_glob_read == 0){
                 glob(argv[i], GLOB_DOOFFS, NULL, &globbuf);
                 first_glob_read = 1;
@@ -70,10 +68,6 @@ void run_command(char *command_str, int in_fd, int out_fd, int wait_children)
             execvpe(globbuf.gl_pathv[0], globbuf.gl_pathv, NULL);
         }else{
             //no globs found, argv can be used directly
-            printf("%s\n", argv[0]);
-            for(i = 0; i < argc; i++){
-                printf("->%s\n", argv[i]);
-            }
             execvpe(argv[0], argv, NULL);
 
         }

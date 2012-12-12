@@ -9,13 +9,17 @@ void param_split(char *command_str, int *argc, char ***argv)
 
     //count the number of params
     char *offset = strtok(buffer, " ");
-
     while(offset != NULL){
         (*argc)++;
         offset = strtok(NULL, " ");
     }
 
-    *argv = malloc(sizeof(char **) * (*argc));
+    //add an empty null pointer at the end to mark the end of the argv vector
+    //since exec family count calculates argc like this
+    // while (argv[argc++]) ;
+    *argv = malloc(sizeof(char **) * (*argc + 1));
+    memset(*argv, 0, ((*argc) + 1)*sizeof(char**));
+
     memcpy(buffer, command_str, strlen(command_str));
     //count the number of params
     offset = strtok(buffer, " ");
