@@ -12,10 +12,8 @@ int main(int argc, char **argv)
 {
     int pid = -1;
     if ((pid = fork()) == 0){
-
         int pipe_fds[2];
         pipe(pipe_fds);
-
         int destination = open("broza", O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR);
         dup2(destination, STDOUT_FILENO);
         close(destination);
@@ -25,7 +23,6 @@ int main(int argc, char **argv)
     }else if (pid > 0){
         int status;
         printf("ESPERANDO %d\n", pid);
-
         wait(&status);
         printf("SALIENDO\n");
     }else{
@@ -55,7 +52,7 @@ if (redirect_in){
 }
 
 if (redirect_out){
-    int out = open(on_file, O_CREAT|O_WRONLY, S_IRUSR|S_IWUSR);
+    int out = open(out_file, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR);
     //close(pipe);
     if (out > 0){
         redirect_out = out;
