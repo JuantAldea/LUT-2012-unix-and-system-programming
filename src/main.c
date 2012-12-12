@@ -40,7 +40,7 @@ int main(int argc, char* argv[]){
     int output_pipe = 0;
 
     while(running){
-        getwd(path);
+        getcwd(path, MAXPATHLEN);
         printf("$ %s > ", path);
 
         char partial_buffer[BUFFER_LENGTH];
@@ -131,6 +131,14 @@ int main(int argc, char* argv[]){
                 }
             }
 
+            if (using_input_redirection || using_output_redirection){
+                for (int i = 0; i < strlen(command); ++i){
+                    if (command[i] == '>' || command[i] == '<'){
+                        command[i] = '\0';
+                    }
+                }
+            }
+
             switch (command_code){
                 case COD_CD:
                     _cd(&command[parameters_index]);
@@ -143,6 +151,7 @@ int main(int argc, char* argv[]){
                     break;
             }
 
+            free(command);
             command = strtok (NULL, "|");
         }
 
