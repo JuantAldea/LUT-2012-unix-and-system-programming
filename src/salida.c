@@ -12,10 +12,16 @@ int main(int argc, char **argv)
 {
     int pid = -1;
     if ((pid = fork()) == 0){
-        //int destination = open("broza", O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR);
-        //dup2(destination, STDOUT_FILENO);
-        //close(destination);
-        run_command("ls -la", STDIN_FILENO, STDOUT_FILENO, 1);
+
+        int pipe_fds[2];
+        pipe(pipe_fds);
+
+        int destination = open("broza", O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR);
+        dup2(destination, STDOUT_FILENO);
+        close(destination);
+        run_command("ls -la", STDIN_FILENO, pipe_fds[1], 1);
+        close(pipe_fds[1]);
+        run_command("grep salida", pipe_fds[0], STDOUT_FILENO, 1);
     }else if (pid > 0){
         int status;
         printf("ESPERANDO %d\n", pid);
