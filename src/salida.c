@@ -13,9 +13,9 @@ int main(int argc, char **argv)
     int pid = -1;
     if ((pid = fork()) == 0){
         int destination = open("broza", O_CREAT|O_WRONLY, S_IRUSR|S_IWUSR);
-        //dup2(destination, STDOUT_FILENO);
-        //close(destination);
-        run_command("ls -la", STDIN_FILENO, destination, 1);
+        dup2(destination, STDOUT_FILENO);
+        close(destination);
+        run_command("ls -la *.c *.h", STDIN_FILENO, destination, 1);
     }else if (pid > 0){
         int status;
         printf("ESPERANDO %d\n", pid);
@@ -23,7 +23,7 @@ int main(int argc, char **argv)
         wait(&status);
         printf("SALIENDO\n");
     }else{
-        printf("ERROR\n");
+        printf("ERROR\b\n");
     }
 }
 

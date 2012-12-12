@@ -1,5 +1,5 @@
 #include "param_split.h"
-
+#include <stdio.h>
 void param_split(char *command_str, int *argc, char ***argv)
 {
     *argc = 0;
@@ -7,27 +7,24 @@ void param_split(char *command_str, int *argc, char ***argv)
     memset(buffer, 0, MAX_PARAM_LENGTH);
     memcpy(buffer, command_str, strlen(command_str));
 
-    char *offset = strtok(buffer, " ");
     //count the number of params
+    char *offset = strtok(buffer, " ");
+
     while(offset != NULL){
-        //printf("Param %d: %s\n", *argc, offset);
         (*argc)++;
         offset = strtok(NULL, " ");
     }
 
-    char **argv_array = malloc(sizeof(char **) * (*argc));
-    
-    memcpy(buffer, command_str, strlen(command_str));    
-    offset = strtok(buffer, " ");
+    *argv = malloc(sizeof(char **) * (*argc));
+    memcpy(buffer, command_str, strlen(command_str));
     //count the number of params
+    offset = strtok(buffer, " ");
     int current_param = 0;
     while(offset != NULL){
-        argv_array[current_param] = strdup(offset);
+        (*argv)[current_param] = strdup(offset);
         current_param++;
         offset = strtok(NULL, " ");
     }
-
-    *argv = argv_array;
 }
 
 void free_param_array(int argc, char ***argv)
@@ -50,13 +47,12 @@ int main(int argc, char **argv)
     char **params = NULL;
     param_split(a, &number_of_params, &params);
     int i;
-    
+
     for (i = 0; i < number_of_params; i++){
         printf("Param %d: %s\n", i, params[i]);
     }
-    
-    free_param_array(number_of_params, &params);
 
+    free_param_array(number_of_params, &params);
     return 1;
 }
 
