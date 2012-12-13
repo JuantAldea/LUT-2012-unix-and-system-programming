@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
 
     while(running){
         getcwd(path, MAXPATHLEN);
-        printf("[%s@%s:%s]$ ", getenv("USER"), getenv("HOSTAME"), path);
+        printf("[%s@%s:%s]$ ", getenv("USER"), getenv("HOSTNAME"), path);
 
         char partial_buffer[BUFFER_LENGTH];
         int parameters_index;
