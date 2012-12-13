@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
 
     while(running){
         getcwd(path, MAXPATHLEN);
-        printf("[%s@%s:%s]$ ", getenv("USER"), getenv("HOSTNAME"), path);
+        printf("[%s:%s]$ ", getenv("USER"), path);
 
         char partial_buffer[BUFFER_LENGTH];
         int parameters_index;
@@ -87,12 +87,31 @@ int main(int argc, char* argv[]){
 
         printf("%s\n", input_buffer);
         add_history_entry(h, input_buffer);
+        char *input_buffer_end = &input_buffer[strlen(input_buffer) + 1];
+
+
+        int previous_pipes[2] = {-1, -1};
+        int next_pipes[2] = {-1, -1};
 
         char *command = NULL;
-        command = strtok(input_buffer, "|");
-
+        char *strtok_status = NULL;
+        command = strtok_r(input_buffer, "|", &strtok_status);
+        int first_command = 1;
+        int last_command = 0;
         while (command != NULL){
-            printf("%s\n", command);
+            int command_end = strlen(command);
+
+
+            //check if it is the last command
+            if (&(command[command_end + 1]) == input_buffer_end){
+                last_command = 1;
+            }else{
+                //if it is not, we need a pipe
+                pipe(next_pipes);
+            }
+
+            fprintf(stderr, "Current command: %s\n", command);
+
             int command_code = builtin_command(command, &parameters_index);
 
             int using_input_redirection = 0;
@@ -106,6 +125,11 @@ int main(int argc, char* argv[]){
             char *redirector;
 
             if ((redirector = strchr(command, '<'))){
+                //if the input is redirected, the pipe is ignored, so close the pipe
+                if (previous_pipes[0] != -1){
+                    close(previous_pipes[0]);
+                    previous_pipes[0] = -1;
+                }
                 sscanf(redirector, "<%s>%*s", input_redirection);
                 using_input_redirection = 1;
                 printf("Redirección de entrada: |%s|\n", input_redirection);
@@ -116,9 +140,22 @@ int main(int argc, char* argv[]){
                 }else{
                     printf("ERROR\n");
                 }
+            }else if(!first_command){
+                //if the current command is not the first, then we have an open pipe
+                in_descriptor = previous_pipes[0];
+            }else{
+                fprintf(stderr, "First command: %s\n", command);
+                //if the current command is the first and it does not have redirection for input,7
+                //then the input is STDIN_FILENO
+                in_descriptor = STDIN_FILENO;
             }
 
             if ((redirector = strchr(command, '>'))){
+                //if the output is redirected, the pipe is ignored, so close the pipe
+                if (next_pipes[1] != -1){
+                    close(next_pipes[1]);
+                    next_pipes[1] = -1;
+                }
                 sscanf(redirector, ">%s<%*s", output_redirection);
                 using_output_redirection = 1;
                 printf("Salida: |%s|\n", output_redirection);
@@ -129,6 +166,14 @@ int main(int argc, char* argv[]){
                 }else{
                     printf("ERROR\n");
                 }
+            }else if(!last_command){
+                //if the current command is not the last, then we need need to write to the pipe
+                out_descriptor = next_pipes[1];
+            }else{
+                //if the current command is the last one and it does not have output redirection
+                //then the output goes to STDOUT_FILENO
+                fprintf(stderr, "Last command: %s\n", command);
+                out_descriptor = STDOUT_FILENO;
             }
 
             if (using_input_redirection || using_output_redirection){
@@ -147,11 +192,36 @@ int main(int argc, char* argv[]){
                     print_history(h);
                     break;
                 default:
+                    fprintf(stderr, "Descriptores: %d %d\n", in_descriptor, out_descriptor);
                     run_command(command, in_descriptor, out_descriptor, 1);
                     break;
             }
 
-            command = strtok (NULL, "|");
+            //close output_pipe
+            if (next_pipes[1] != -1){
+                close(next_pipes[1]);
+                next_pipes[1] = -1;
+            }
+            //close input_pipe
+            if (previous_pipes[0] != -1){
+                close(previous_pipes[0]);
+                previous_pipes[0] = -1;
+            }
+
+            if (in_descriptor != STDIN_FILENO && in_descriptor != -1){
+                close(in_descriptor);
+                in_descriptor = -1;
+            }
+            if (out_descriptor != STDOUT_FILENO && out_descriptor != -1){
+                close(out_descriptor);
+                out_descriptor = -1;
+            }
+            //the input of the next program will be the out_pipe
+            //created during the current iteration
+            previous_pipes[0] = next_pipes[0];
+
+            command = strtok_r (NULL, "|", &strtok_status);
+            first_command = 0;
         }
 
     }
