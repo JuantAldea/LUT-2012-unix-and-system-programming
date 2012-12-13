@@ -36,9 +36,6 @@ int main(int argc, char* argv[]){
 
     history *h = new_history();
 
-    int input_pipe = 0;
-    int output_pipe = 0;
-
     while(running){
         getcwd(path, MAXPATHLEN);
         printf("[%s:%s]$ ", getenv("USER"), path);
@@ -223,7 +220,28 @@ int main(int argc, char* argv[]){
             command = strtok_r (NULL, "|", &strtok_status);
             first_command = 0;
         }
+         //close output_pipe
+        if (next_pipes[1] != -1){
+            close(next_pipes[1]);
+            next_pipes[1] = -1;
+        }
 
+        if (next_pipes[0] != -1){
+            close(next_pipes[0]);
+            next_pipes[0] = -1;
+        }
+
+        //close input_pipe
+        if (previous_pipes[0] != -1){
+            close(previous_pipes[0]);
+            previous_pipes[0] = -1;
+        }
+
+        //close input_pipe
+        if (previous_pipes[1] != -1){
+            close(previous_pipes[1]);
+            previous_pipes[1] = -1;
+        }
     }
 
     return 1;
