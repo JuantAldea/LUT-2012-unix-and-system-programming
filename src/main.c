@@ -17,13 +17,81 @@ int builtin_command(char *input_buffer, int *parameters_index){
     }
 }
 
-void get_command(char *buffer){
+void get_command(char *buffer, history *h){
     char ch = getchar();
     int w = 0;
+    int w_max = 0;
+
+    int y = 0;
+    history_entry *t = h->last;
+
+    char w_buffer[BUFFER_LENGTH];
+
     while (ch != '\r' && ch != '\n'){
-        if (ch == 0x7f){
-            if (w){
+        if (ch == 27){
+            if (getchar() == 91){
+                ch = getchar();
+
+                if (ch == 65){ // Up
+                    if (y < MAX_HISTORY_LENGTH && y < h->entries){
+                        if (y == 0){
+                            strcpy(w_buffer, buffer);
+                        }
+                        y++;
+                        strcpy(buffer, t->line);
+                        for (int i = w; i < w_max; ++i){
+                            printf(" ");
+                        }
+                        for (int i = 0; i < w; ++i){
+                            printf("\b \b");
+                        }
+                        w = w_max = strlen(buffer);
+                        printf("%s", buffer);
+                        t = t->previous;
+                    }
+                } else if (ch == 66){ // Down
+                    if (y == 1){
+                        y = 0;
+                        strcpy(buffer, w_buffer);
+                        for (int i = w; i < w_max; ++i){
+                            printf(" ");
+                        }
+                        for (int i = 0; i < w; ++i){
+                            printf("\b \b");
+                        }
+                        w = w_max = strlen(buffer);
+                        printf("%s", buffer);
+
+                    } else if (y > 1){
+                        y--;
+                        t = t->next;
+                        strcpy(buffer, t->line);
+                        for (int i = w; i < w_max; ++i){
+                            printf(" ");
+                        }
+                        for (int i = 0; i < w; ++i){
+                            printf("\b \b");
+                        }
+                        w = w_max = strlen(buffer);
+                        printf("%s", buffer);
+                    }
+                } else if (ch == 67){ // Right
+                    if (w < w_max){
+                        printf("%c", buffer[w]);
+                        w++;
+
+                    }
+                } else if (ch == 68){ // Left
+                    if (w > 0){
+                        w--;
+                        printf("\b");
+                    }
+                }
+            }
+        } else if (ch == 0x7f){
+            if (w > 0){
                 w--;
+                w_max--;
                 buffer[w] = '\0';
                 printf("\b \b");
             }
@@ -31,14 +99,15 @@ void get_command(char *buffer){
         } else if (isprint(ch)){
             buffer[w] = ch;
             w++;
+            w_max++;
             printf("%c", ch);
         }
 
-        buffer[w] = '\0';
+        buffer[w_max] = '\0';
 
         ch = getchar();
     }
-    printf("\n\r");
+    printf("\r\n");
 }
 
 
@@ -83,7 +152,7 @@ int main(int argc, char* argv[]){
             exit(1);
         }
 
-        get_command(partial_buffer);
+        get_command(partial_buffer, h);
 
         if (tcsetattr(STDIN_FILENO, TCSANOW, &old) == -1) {
             perror("tcsetattr");

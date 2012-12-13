@@ -14,10 +14,12 @@ history * new_history(){
 }
 
 int add_history_entry(history *h, char *line){
+	history_entry *previous = h->last;
 	if (h->entries < h->max){ // History not full
 		if (h->entries == 0){ // Empty history
 			h->first = (history_entry*)malloc(sizeof(history_entry));
 			h->last = h->first;
+			previous = h->first;
 		} else { // Still not full
 			h->last->next = (history_entry*)malloc(sizeof(history_entry));
 			h->last = h->last->next;
@@ -34,6 +36,7 @@ int add_history_entry(history *h, char *line){
 	strncpy(h->last->line, line, BUFFER_LENGTH);
 	gettimeofday(&(h->last->timestamp), NULL);
 	h->last->next = h->first;
+	h->last->previous = previous;
 
 	return h->entries;
 }

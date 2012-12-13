@@ -11,6 +11,7 @@ struct history_entry{
 	char line[BUFFER_LENGTH];
 	struct timeval timestamp;
 
+	history_entry *previous;
 	history_entry *next;
 };
 
