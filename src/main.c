@@ -17,19 +17,50 @@ int builtin_command(char *input_buffer, int *parameters_index){
     }
 }
 
+void get_command(char *buffer){
+    char ch = getchar();
+    int w = 0;
+    while (ch != '\r' && ch != '\n'){
+        if (ch == 0x7f){
+            if (w){
+                w--;
+                buffer[w] = '\0';
+                printf("\b \b");
+            }
 
-int find_first_redirector(char *command){
-    int i;
-    for (i = 0; i < strlen(command); ++i){
-        if (command[i] == '<' || command[i] == '>'){
-            return i;
+        } else if (isprint(ch)){
+            buffer[w] = ch;
+            w++;
+            printf("%c", ch);
         }
+
+        buffer[w] = '\0';
+
+        ch = getchar();
     }
-    return i+1;
+    printf("\n\r");
 }
 
 
 int main(int argc, char* argv[]){
+
+    struct termios term, old;
+
+    /* Get current terminal attributes. */
+    if (tcgetattr(STDIN_FILENO, &term) == -1) {
+        perror("tcgetattr");
+        exit(1);
+    }
+
+    old = term;
+
+    // term.c_iflag &= ~(INLCR | ICRNL | ISTRIP | IXON);
+    term.c_lflag &= ~(ICANON | ECHO);
+    // term.c_oflag &= ~OPOST;
+
+    /* One byte at a time input (MIN=1, TIME=0). */
+    term.c_cc[VMIN] = 1;
+    term.c_cc[VTIME] = 0;
 
     int running = 1;
     char path[MAXPATHLEN]; // MAXPATHLEN as defined in sys/params.h
@@ -44,10 +75,23 @@ int main(int argc, char* argv[]){
         printf("[%s:%s]$ ", getenv("USER"), path);
 
         char partial_buffer[BUFFER_LENGTH];
+        memset(partial_buffer, 0, BUFFER_LENGTH);
         int parameters_index;
 
-        fgets(partial_buffer, BUFFER_LENGTH, stdin);
-        partial_buffer[strnlen(partial_buffer, BUFFER_LENGTH) - 1] = '\0';
+        // fgets(partial_buffer, BUFFER_LENGTH, stdin);
+        // partial_buffer[strnlen(partial_buffer, BUFFER_LENGTH) - 1] = '\0';
+
+        if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1) {
+            perror("tcsetattr");
+            exit(1);
+        }
+
+        get_command(partial_buffer);
+
+        if (tcsetattr(STDIN_FILENO, TCSANOW, &old) == -1) {
+            perror("tcsetattr");
+            exit(1);
+        }
 
         char input_buffer[BUFFER_LENGTH];
         memset(input_buffer, 0, BUFFER_LENGTH);
@@ -68,8 +112,6 @@ int main(int argc, char* argv[]){
                 sscanf(partial_buffer, "%[^!]!%d%[^\t\n]", temp_buffer, &id, temp2_buffer);
             }
 
-            printf("%s - %d - %s\n", temp_buffer, id, temp2_buffer);
-
             strcat(input_buffer, temp_buffer);
             history_entry *he;
             if((he = get_history_entry(h, id))){
@@ -85,7 +127,7 @@ int main(int argc, char* argv[]){
         memset(temp_buffer, 0, BUFFER_LENGTH);
         memset(temp2_buffer, 0, BUFFER_LENGTH);
 
-        printf("%s\n", input_buffer);
+        printf("Input: |%s|\n", input_buffer);
         add_history_entry(h, input_buffer);
         char *input_buffer_end = &input_buffer[strlen(input_buffer) + 1];
 
@@ -101,6 +143,7 @@ int main(int argc, char* argv[]){
         while (command != NULL){
             int command_end = strlen(command);
 
+            printf("Command: |%s|\n", command);
 
             //check if it is the last command
             if (&(command[command_end + 1]) == input_buffer_end){
@@ -110,7 +153,7 @@ int main(int argc, char* argv[]){
                 pipe(next_pipes);
             }
 
-            fprintf(stderr, "Current command: %s\n", command);
+            // fprintf(stderr, "Current command: %s\n", command);
 
             int command_code = builtin_command(command, &parameters_index);
 
@@ -144,7 +187,7 @@ int main(int argc, char* argv[]){
                 //if the current command is not the first, then we have an open pipe
                 in_descriptor = previous_pipes[0];
             }else{
-                fprintf(stderr, "First command: %s\n", command);
+                // fprintf(stderr, "First command: %s\n", command);
                 //if the current command is the first and it does not have redirection for input,7
                 //then the input is STDIN_FILENO
                 in_descriptor = STDIN_FILENO;
@@ -172,7 +215,7 @@ int main(int argc, char* argv[]){
             }else{
                 //if the current command is the last one and it does not have output redirection
                 //then the output goes to STDOUT_FILENO
-                fprintf(stderr, "Last command: %s\n", command);
+                // fprintf(stderr, "Last command: %s\n", command);
                 out_descriptor = STDOUT_FILENO;
             }
 
@@ -185,6 +228,7 @@ int main(int argc, char* argv[]){
             }
 
             switch (command_code){
+                printf("%d\n", command_code);
                 case COD_CD:
                     _cd(&command[parameters_index]);
                     break;
@@ -192,7 +236,7 @@ int main(int argc, char* argv[]){
                     print_history(h);
                     break;
                 default:
-                    fprintf(stderr, "Descriptores: %d %d\n", in_descriptor, out_descriptor);
+                    // fprintf(stderr, "Descriptores: %d %d\n", in_descriptor, out_descriptor);
                     run_command(command, in_descriptor, out_descriptor, 1);
                     break;
             }

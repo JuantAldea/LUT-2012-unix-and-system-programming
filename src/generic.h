@@ -10,6 +10,8 @@
 #include <signal.h>
 #include <glob.h>
 #include <sys/wait.h>
+#include <termios.h>
+#include <ctype.h>
 
 #include <time.h>
 #include <sys/time.h>
