@@ -11,6 +11,9 @@ void run_command(char *command_str, int in_fd, int out_fd, int wait_children)
     memset(&globbuf, 0, sizeof(glob_t));
 
     param_split(command_str, &argc, &argv);
+
+    int glob_matched = 0;
+
     //argc the number of params
     for (i = 0; i < argc; i++){
         if (argv[i][0] != '-' &&
@@ -21,6 +24,7 @@ void run_command(char *command_str, int in_fd, int out_fd, int wait_children)
             globbuf.gl_offs++;
         }
     }
+
     //expand the globs
     for (i = 0; i < argc; i++){
         if (argv[i][0] != '-' &&
@@ -28,10 +32,10 @@ void run_command(char *command_str, int in_fd, int out_fd, int wait_children)
              strchr(argv[i], '?') != NULL ||
              strchr(argv[i], '[') != NULL)){
             if (first_glob_read == 0){
-                glob(argv[i], GLOB_DOOFFS, NULL, &globbuf);
+                glob_matched = (glob_matched ? glob_matched : !glob(argv[i], GLOB_DOOFFS, NULL, &globbuf));
                 first_glob_read = 1;
             }else{
-                glob(argv[i], GLOB_DOOFFS | GLOB_APPEND, NULL, &globbuf);
+                glob_matched = (glob_matched ? glob_matched : !glob(argv[i], GLOB_DOOFFS | GLOB_APPEND, NULL, &globbuf));
             }
         }
     }
@@ -64,7 +68,7 @@ void run_command(char *command_str, int in_fd, int out_fd, int wait_children)
             close(in_fd);
         }
 
-        if (first_glob_read == 1){
+        if (first_glob_read == 1 && glob_matched){
             execvpe(globbuf.gl_pathv[0], globbuf.gl_pathv, NULL);
         }else{
             //no globs found, argv can be used directly
