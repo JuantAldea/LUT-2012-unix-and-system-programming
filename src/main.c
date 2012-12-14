@@ -205,7 +205,6 @@ int main(int argc, char* argv[]){
         memset(temp_buffer, 0, BUFFER_LENGTH);
         memset(temp2_buffer, 0, BUFFER_LENGTH);
 
-        printf("Input: |%s|\n", input_buffer);
         add_history_entry(h, input_buffer);
         dump_history(h);
         char *input_buffer_end = &input_buffer[strlen(input_buffer) + 1];
@@ -221,8 +220,6 @@ int main(int argc, char* argv[]){
         int last_command = 0;
         while (command != NULL){
             int command_end = strlen(command);
-
-            printf("Command: |%s|\n", command);
 
             //check if it is the last command
             if (&(command[command_end + 1]) == input_buffer_end){
@@ -254,7 +251,6 @@ int main(int argc, char* argv[]){
                 }
                 sscanf(redirector, "<%s>%*s", input_redirection);
                 using_input_redirection = 1;
-                printf("Redirección de entrada: |%s|\n", input_redirection);
 
                 int in = open(input_redirection, O_RDONLY, S_IRUSR|S_IWUSR);
                 if (in > 0){
@@ -280,7 +276,6 @@ int main(int argc, char* argv[]){
                 }
                 sscanf(redirector, ">%s<%*s", output_redirection);
                 using_output_redirection = 1;
-                printf("Salida: |%s|\n", output_redirection);
 
                 int out = open(output_redirection, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR);
                 if (out > 0){
@@ -307,7 +302,6 @@ int main(int argc, char* argv[]){
             }
 
             switch (command_code){
-                printf("%d\n", command_code);
                 case COD_CD:
                     _cd(&command[parameters_index]);
                     break;
