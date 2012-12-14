@@ -23,5 +23,5 @@ $(OBJ)/%.o: $(SRC)/%.c $(SRC)/%.h $(SRC)/generic.h $(SRC)/parameters.h
 	$(CC) -c $(SRC)/$*.c -o $(OBJ)/$*.o
 
 clean:
-	rm -f $(OBJ)/*.o
-	rm -f $(BIN)/shell
+	rm -rf $(OBJ)
+	rm -rf $(BIN)
