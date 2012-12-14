@@ -1,0 +1,29 @@
+/*******************************************************************\
+ *                                                                 *
+ *             CT50A3000 - Unix and System Programming             *
+ *                                                                 *
+ *    Shell Project                                                *
+ *                                                                 *
+ *    Authors:                                                     *
+ *        Juan Antonio Aldea Armenteros - 0404450                  *
+ *        Pablo Caro Martin - 0404489                              *
+ *                                                                 *
+\*******************************************************************/
+
+DESCRIPTION
+In this assignment, a simple shell has been implemented using the C language. This has been done by a group of two people, Juan Antonio Aldea Armenteros and Pablo Caro Martin.
+
+BASIC FEATURES
+Every required basic feature has been implemented, including:
+    - Default home directory (environment variables)
+    - Moving between directories
+    - Command Execution with exec()-family of system-calls, system() does not count (processes, signals)
+    - Command History (file I/O)
+    - Pipelines and stdin/out redirection (Interprocess communication)
+    - Command line editing (Terminal I/O)
+
+BONUS FEATURES
+Every bonus feature has been implemented, including:
+    - Expanded wildcards with glob (p.e. ls -la *.c)
+    - Up and down arrow keys are used to navigate the history. Left and right arrow keys move the cursor.
+    - An arbitrary numbers of pipes/redirections are supported.

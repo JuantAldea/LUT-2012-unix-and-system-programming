@@ -1,3 +1,15 @@
+/*******************************************************************\
+ *                                                                 *
+ *             CT50A3000 - Unix and System Programming             *
+ *                                                                 *
+ *    Shell Project                                                *
+ *                                                                 *
+ *    Authors:                                                     *
+ *        Juan Antonio Aldea Armenteros - 0404450                  *
+ *        Pablo Caro Martin - 0404489                              *
+ *                                                                 *
+\*******************************************************************/
+
 #include "param_split.h"
 #include <stdio.h>
 void param_split(char *command_str, int *argc, char ***argv)

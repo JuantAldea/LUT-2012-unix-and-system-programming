@@ -1,3 +1,15 @@
+/*******************************************************************\
+ *                                                                 *
+ *             CT50A3000 - Unix and System Programming             *
+ *                                                                 *
+ *    Shell Project                                                *
+ *                                                                 *
+ *    Authors:                                                     *
+ *        Juan Antonio Aldea Armenteros - 0404450                  *
+ *        Pablo Caro Martin - 0404489                              *
+ *                                                                 *
+\*******************************************************************/
+
 #include "history.h"
 
 history * new_history(){
@@ -9,6 +21,17 @@ history * new_history(){
 
 	h->first = NULL;
 	h->last = NULL;
+
+	char buffer[BUFFER_LENGTH];
+	FILE *history_file = fopen(HISTORY_FILE, "r");
+	if (history_file){
+		while(fgets(buffer, BUFFER_LENGTH, history_file)){
+			buffer[strnlen(buffer, BUFFER_LENGTH)-1] = '\0';
+			add_history_entry(h, buffer);
+		}
+
+		fclose(history_file);
+	}
 
 	return h;
 }
@@ -73,4 +96,17 @@ void print_history(history *h){
 		printf("%*d  %s\n", 6, t->id, t->line);
 		t = t->next;
 	}
+}
+
+void dump_history(history *h){
+	FILE *history_file = fopen(HISTORY_FILE, "w");
+	history_entry *t = h->first;
+
+	for (int i = 0; i < h->entries; ++i){
+		fputs(t->line, history_file);
+		fputs("\n", history_file);
+		t = t->next;
+	}
+
+	fclose(history_file);
 }

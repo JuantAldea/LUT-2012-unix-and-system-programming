@@ -1,3 +1,15 @@
+/*******************************************************************\
+ *                                                                 *
+ *             CT50A3000 - Unix and System Programming             *
+ *                                                                 *
+ *    Shell Project                                                *
+ *                                                                 *
+ *    Authors:                                                     *
+ *        Juan Antonio Aldea Armenteros - 0404450                  *
+ *        Pablo Caro Martin - 0404489                              *
+ *                                                                 *
+\*******************************************************************/
+
 #include <unistd.h>
 #include <dirent.h>
 #include <sys/types.h>

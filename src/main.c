@@ -1,3 +1,15 @@
+/*******************************************************************\
+ *                                                                 *
+ *             CT50A3000 - Unix and System Programming             *
+ *                                                                 *
+ *    Shell Project                                                *
+ *                                                                 *
+ *    Authors:                                                     *
+ *        Juan Antonio Aldea Armenteros - 0404450                  *
+ *        Pablo Caro Martin - 0404489                              *
+ *                                                                 *
+\*******************************************************************/
+
 #include "generic.h"
 
 int builtin_command(char *input_buffer, int *parameters_index){
@@ -195,6 +207,7 @@ int main(int argc, char* argv[]){
 
         printf("Input: |%s|\n", input_buffer);
         add_history_entry(h, input_buffer);
+        dump_history(h);
         char *input_buffer_end = &input_buffer[strlen(input_buffer) + 1];
 
 

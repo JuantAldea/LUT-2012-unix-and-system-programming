@@ -1,3 +1,15 @@
+/*******************************************************************\
+ *                                                                 *
+ *             CT50A3000 - Unix and System Programming             *
+ *                                                                 *
+ *    Shell Project                                                *
+ *                                                                 *
+ *    Authors:                                                     *
+ *        Juan Antonio Aldea Armenteros - 0404450                  *
+ *        Pablo Caro Martin - 0404489                              *
+ *                                                                 *
+\*******************************************************************/
+
 #ifndef __HISTORY_H
 #define __HISTORY_H
 
@@ -31,5 +43,6 @@ history_entry * get_history_entry(history *h, int id);
 int free_history(history *h);
 
 void print_history(history *h);
+void dump_history(history *h);
 
 #endif
